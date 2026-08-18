@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Stories - BlogApp Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}">
+    <link rel="alternate icon" th:href="@{/favicon.ico}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <div th:replace="~{layout/navbar :: navbar}"></div>
+
+    <main class="main-content">
+        <div class="container">
+
+            <div style="margin-bottom: 2rem;">
+                <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">🔖 Reading List & Bookmarks</h1>
+                <p style="color: var(--text-secondary); font-size: 0.95rem;">Articles you've saved for later reading.</p>
+            </div>
+
+            <div th:if="${bookmarks == null || bookmarks.content == null || bookmarks.content.isEmpty()}" style="padding: 3rem 0; text-align: center; color: var(--text-secondary);">
+                <p style="font-size: 1.15rem; margin-bottom: 1rem;">You haven't saved any stories yet.</p>
+                <a href="/" class="btn btn-primary btn-sm">Explore Stories</a>
+            </div>
+
+            <div class="articles-grid" th:if="${bookmarks != null && bookmarks.content != null && !bookmarks.content.isEmpty()}">
+                <article class="article-card" th:each="art : ${bookmarks.content}">
+                    <div class="article-card-body">
+                        <div class="article-card-meta">
+                            <span class="badge badge-category" th:if="${art.category != null}" th:text="${art.category.name}">Category</span>
+                            <span th:text="${art.readingMinutes + ' min read'}">3 min read</span>
+                        </div>
+                        <h3 class="article-card-title">
+                            <a th:href="@{/articles/{slug}(slug=${art.slug ?: art.id})}" th:text="${art.title}">Title</a>
+                        </h3>
+                        <p class="article-card-desc" th:text="${art.shortDesc}">Description</p>
+                        <div class="article-card-footer">
+                            <div class="author-chip" th:if="${art.user != null}">
+                                <div class="author-avatar" th:text="${#strings.substring(art.user.name, 0, 1)}">U</div>
+                                <span th:text="${art.user.name}">Author</span>
+                            </div>
+                            <button class="action-btn bookmarked" th:onclick="'App.toggleBookmark(' + ${art.id} + ', this)'">
+                                <span>🔖</span> Remove
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+        </div>
+    </main>
+
+    <div th:replace="~{layout/footer :: footer}"></div>
+
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>

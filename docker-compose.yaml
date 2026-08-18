@@ -1,0 +1,55 @@
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql-container-new
+    restart: unless-stopped
+    ports:
+      - "3309:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: pranay123
+      MYSQL_DATABASE: blog_app
+
+    volumes:
+      - mysql_data_new:/var/lib/mysql
+    networks:
+      - backend_network_new
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-ppranay123",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  blogapp:
+    build: .
+    container_name: springboot-container-new
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_HOST: mysql-container-new
+      DB_PORT: 3306
+      DB_NAME: blog_app
+      DB_USERNAME: root
+      DB_PASSWORD: pranay123
+    networks:
+      - backend_network_new
+    depends_on:
+      mysql:
+        condition: service_healthy
+volumes:
+  mysql_data_new:
+    driver: local
+
+networks:
+  backend_network_new:
+    driver: bridge

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'#' + ${tag.name} + ' - BlogApp Pro'">Tag - BlogApp Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}">
+    <link rel="alternate icon" th:href="@{/favicon.ico}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <div th:replace="~{layout/navbar :: navbar}"></div>
+
+    <main class="main-content">
+        <div class="container">
+
+            <!-- Tag Header -->
+            <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2.5rem; margin-bottom: 2.5rem;">
+                <span class="badge badge-tag" style="margin-bottom: 0.75rem;">Topic Tag</span>
+                <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;" th:text="'#' + ${tag.name}">#Tag</h1>
+                <p style="color: var(--text-secondary); font-size: 1.05rem;">All articles tagged with this topic.</p>
+                <div style="margin-top: 1rem; color: var(--text-muted); font-size: 0.88rem;">
+                    <strong style="color: #fff;" th:text="${articles.totalElements}">0</strong> stories
+                </div>
+            </div>
+
+            <!-- Articles Grid -->
+            <div class="articles-grid">
+                <article class="article-card" th:each="art : ${articles.content}">
+                    <div class="article-card-body">
+                        <div class="article-card-meta">
+                            <span class="badge badge-category" th:if="${art.category != null}" th:text="${art.category.name}">Category</span>
+                            <span th:text="${art.readingMinutes + ' min read'}">3 min read</span>
+                        </div>
+                        <h3 class="article-card-title">
+                            <a th:href="@{/articles/{slug}(slug=${art.slug ?: art.id})}" th:text="${art.title}">Title</a>
+                        </h3>
+                        <p class="article-card-desc" th:text="${art.shortDesc}">Description</p>
+                        <div class="article-card-footer">
+                            <div class="author-chip" th:if="${art.user != null}">
+                                <div class="author-avatar" th:text="${#strings.substring(art.user.name, 0, 1)}">U</div>
+                                <span th:text="${art.user.name}">Author</span>
+                            </div>
+                            <div class="article-stats">
+                                <span>👁️ <span th:text="${art.viewsCount}">0</span></span>
+                                <span>❤️ <span th:text="${art.likesCount}">0</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+        </div>
+    </main>
+
+    <div th:replace="~{layout/footer :: footer}"></div>
+
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>

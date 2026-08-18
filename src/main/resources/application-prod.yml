@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: blog-app
+  datasource:
+    url: jdbc:mysql://${DB_HOST:mysql-container-new}:${DB_PORT:3306}/${DB_NAME:blog_app}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:pranay123}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    database-platform: org.hibernate.dialect.MySQLDialect
+    open-in-view: true
+  #minIO configuration
+  minio:
+    endpoint: http://localhost:9000
+    access-key: minioadmin
+    secret-key: minioadmin
+    bucket-name: blog-app
+
+server:
+  port: 8080

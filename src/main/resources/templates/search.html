@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Stories - BlogApp Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}">
+    <link rel="alternate icon" th:href="@{/favicon.ico}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <div th:replace="~{layout/navbar :: navbar}"></div>
+
+    <main class="main-content">
+        <div class="container">
+
+            <div style="margin-bottom: 2rem;">
+                <h1 style="font-size: 2rem; margin-bottom: 1rem;">Explore & Search Stories</h1>
+                
+                <form action="/search" method="GET" style="display: flex; gap: 0.75rem; max-width: 600px;">
+                    <input type="text" name="q" class="form-input" placeholder="Search keywords, technologies, authors..." th:value="${query}" />
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+            </div>
+
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span th:if="${query != null && !query.isBlank()}" th:text="'Results for “' + ${query} + '” (' + ${articles.totalElements} + ')'">Search Results</span>
+                    <span th:unless="${query != null && !query.isBlank()}">All Stories</span>
+                </h2>
+            </div>
+
+            <div th:if="${articles == null || articles.content == null || articles.content.isEmpty()}" style="padding: 3rem 0; text-align: center; color: var(--text-secondary);">
+                <p style="font-size: 1.2rem;">No matching stories found. Try a different keyword.</p>
+            </div>
+
+            <div class="articles-grid" th:if="${articles != null && articles.content != null && !articles.content.isEmpty()}">
+                <article class="article-card" th:each="art : ${articles.content}">
+                    <div class="article-card-body">
+                        <div class="article-card-meta">
+                            <span class="badge badge-category" th:if="${art.category != null}" th:text="${art.category.name}">Category</span>
+                            <span th:text="${art.readingMinutes + ' min read'}">3 min read</span>
+                        </div>
+                        <h3 class="article-card-title">
+                            <a th:href="@{/articles/{slug}(slug=${art.slug ?: art.id})}" th:text="${art.title}">Title</a>
+                        </h3>
+                        <p class="article-card-desc" th:text="${art.shortDesc}">Description</p>
+                        
+                        <div class="article-card-footer">
+                            <div class="author-chip" th:if="${art.user != null}">
+                                <div class="author-avatar" th:text="${#strings.substring(art.user.name, 0, 1)}">U</div>
+                                <span th:text="${art.user.name}">Author</span>
+                            </div>
+                            <div class="article-stats">
+                                <span>👁️ <span th:text="${art.viewsCount}">0</span></span>
+                                <span>❤️ <span th:text="${art.likesCount}">0</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+        </div>
+    </main>
+
+    <div th:replace="~{layout/footer :: footer}"></div>
+
+    <script th:src="@{/js/app.js}"></script>
+</body>
+</html>

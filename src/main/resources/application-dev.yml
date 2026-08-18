@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: blog-app
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/blog_app?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: Pranay@666
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    database-platform: org.hibernate.dialect.MySQLDialect
+    open-in-view: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  # minIO configuration
+  minio:
+    endpoint: http://localhost:9000
+    access-key: minioadmin
+    secret-key: minioadmin
+    bucket-name: blog-app
+
+app:
+  jwt:
+    secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+    expiration-ms: 604800000
+
+logging:
+  level:
+    org:
+      springframework:
+        security: INFO

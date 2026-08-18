@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<footer class="footer" th:fragment="footer">
+    <div class="container footer-container">
+        <div>
+            <div class="brand" style="margin-bottom: 0.5rem;">
+                <div class="brand-icon" style="width: 28px; height: 28px; font-size: 0.9rem;">B</div>
+                <span style="font-size: 1.1rem;">BlogApp Pro</span>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.85rem;">Enterprise-grade blogging platform powered by Spring Boot 4, MySQL, MinIO & JWT.</p>
+        </div>
+        <div style="display: flex; gap: 1.5rem; font-size: 0.88rem;">
+            <a href="/swagger-ui.html" target="_blank" style="color: var(--text-secondary);">Swagger API</a>
+            <a href="/" style="color: var(--text-secondary);">Home</a>
+            <a href="/editor" style="color: var(--text-secondary);">Write</a>
+            <a href="/dashboard" style="color: var(--text-secondary);">Dashboard</a>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

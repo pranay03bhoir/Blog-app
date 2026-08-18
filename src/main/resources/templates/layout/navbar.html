@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav class="navbar" th:fragment="navbar">
+    <div class="container nav-container">
+        <a href="/" class="brand">
+            <div class="brand-icon">B</div>
+            <span>BlogApp</span>
+            <span class="brand-badge">Pro</span>
+        </a>
+
+        <form action="/search" method="GET" class="nav-search">
+            <span class="nav-search-icon">🔍</span>
+            <input type="text" name="q" placeholder="Search stories, topics, engineering guides..." th:value="${query}" />
+        </form>
+
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/swagger-ui.html" target="_blank" class="nav-link" title="OpenAPI REST API Docs">API Docs</a>
+            
+            <div id="auth-nav-items" style="display: flex; align-items: center; gap: 0.75rem;">
+                <!-- Filled dynamically by app.js based on JWT -->
+                <a href="/login" class="nav-link">Sign In</a>
+                <a href="/register" class="btn btn-primary btn-sm">Get Started</a>
+            </div>
+        </div>
+    </div>
+</nav>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${article.title} + ' - BlogApp Pro'">Article Title - BlogApp Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}">
+    <link rel="alternate icon" th:href="@{/favicon.ico}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <!-- Marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+
+    <div class="reading-progress-bar"></div>
+    <div th:replace="~{layout/navbar :: navbar}"></div>
+
+    <main class="main-content">
+        <div class="container reader-container">
+
+            <!-- Reader Header -->
+            <header class="reader-header">
+                <div style="display: flex; gap: 0.75rem; align-items: center; margin-bottom: 0.75rem;">
+                    <a th:if="${article.category != null}" 
+                       th:href="@{/category/{slug}(slug=${article.category.slug ?: article.category.id})}" 
+                       class="badge badge-category" 
+                       th:text="${article.category.name}">Category</a>
+                    <span style="color: var(--text-muted); font-size: 0.85rem;" th:text="${article.readingMinutes + ' min read'}">4 min read</span>
+                    <span style="color: var(--text-muted); font-size: 0.85rem;">•</span>
+                    <span style="color: var(--text-muted); font-size: 0.85rem;" th:text="${article.publishedAt != null ? #temporals.format(article.publishedAt, 'MMMM dd, yyyy') : 'Recently'}">Date</span>
+                </div>
+
+                <h1 th:text="${article.title}">Article Title Goes Here</h1>
+                <p style="font-size: 1.2rem; color: var(--text-secondary); line-height: 1.5;" th:text="${article.shortDesc}">Short subtitle or description...</p>
+
+                <!-- Author & Engagement Bar -->
+                <div class="reader-author-bar">
+                    <div class="author-chip" th:if="${article.user != null}">
+                        <div class="author-avatar" style="width: 44px; height: 44px; font-size: 1.1rem;" th:text="${#strings.substring(article.user.name, 0, 1)}">A</div>
+                        <div>
+                            <div style="font-weight: 700; color: #fff;" th:text="${article.user.name}">Author Name</div>
+                            <div style="font-size: 0.82rem; color: var(--text-muted);" th:text="${article.user.tagline ?: 'Software Engineer'}">Author Tagline</div>
+                        </div>
+                    </div>
+
+                    <div class="reader-actions">
+                        <button class="action-btn" th:classappend="${article.isLikedByCurrentUser} ? 'active' : ''" th:onclick="'App.toggleLike(' + ${article.id} + ', this)'" id="like-button">
+                            <span>❤️</span>
+                            <span class="like-count" th:text="${article.likesCount}">0</span>
+                        </button>
+
+                        <button class="action-btn" th:classappend="${article.isBookmarkedByCurrentUser} ? 'bookmarked' : ''" th:onclick="'App.toggleBookmark(' + ${article.id} + ', this)'" id="bookmark-button">
+                            <span>🔖</span>
+                            <span>Save</span>
+                        </button>
+
+                        <span class="action-btn" style="cursor: default;" title="Views">
+                            <span>👁️</span>
+                            <span th:text="${article.viewsCount}">0</span>
+                        </span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Cover Image if present -->
+            <div th:if="${article.coverImageUrl != null}" style="border-radius: var(--radius-md); overflow: hidden; margin-bottom: 2rem; border: 1px solid var(--border-color);">
+                <img th:src="${article.coverImageUrl}" alt="Cover" style="width: 100%; max-height: 480px; object-fit: cover;" />
+            </div>
+
+            <!-- Raw Content to be rendered by Markdown -->
+            <div id="raw-markdown-content" style="display: none;" th:text="${article.content}"></div>
+            
+            <!-- Rendered Markdown Body -->
+            <article class="article-content" id="article-markdown-body">
+                <!-- Rendered by JS -->
+            </article>
+
+            <!-- Tags -->
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 2rem 0; padding-top: 1.5rem; border-top: 1px solid var(--border-color);" th:if="${article.tags != null}">
+                <a th:each="t : ${article.tags}" th:href="@{/tag/{slug}(slug=${t.slug})}" class="badge badge-tag" style="padding: 0.4rem 0.85rem; font-size: 0.85rem;" th:text="'#' + ${t.name}">#tag</a>
+            </div>
+
+            <!-- Author Bio Box -->
+            <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.75rem; margin: 3rem 0; display: flex; gap: 1.25rem; align-items: center;" th:if="${article.user != null}">
+                <div class="author-avatar" style="width: 60px; height: 60px; font-size: 1.4rem; flex-shrink: 0;" th:text="${#strings.substring(article.user.name, 0, 1)}">A</div>
+                <div>
+                    <h4 style="color: #fff; margin-bottom: 0.25rem;" th:text="'Written by ' + ${article.user.name}">Author</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.92rem;" th:text="${article.user.bio ?: 'Tech writer & software developer building high scale applications.'}">Author bio</p>
+                </div>
+            </div>
+
+            <!-- Comments Section -->
+            <section class="comments-section" id="comments">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <span>💬 Responses (<span th:text="${article.commentsCount}">0</span>)</span>
+                    </h3>
+                </div>
+
+                <!-- Add Comment Input Box -->
+                <div class="comment-box">
+                    <textarea id="comment-main-input" placeholder="What are your thoughts on this story?"></textarea>
+                    <div class="comment-box-footer">
+                        <button class="btn btn-primary btn-sm" th:onclick="'App.postComment(' + ${article.id} + ')'">Publish Response</button>
+                    </div>
+                </div>
+
+                <!-- Comments List Container -->
+                <div id="comments-container">
+                    <p style="color: var(--text-muted); text-align: center; padding: 1rem 0;">Loading discussions...</p>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <div th:replace="~{layout/footer :: footer}"></div>
+
+    <script th:src="@{/js/app.js}"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const articleId = /*[[${article.id}]]*/ 0;
+
+        // Render Markdown
+        document.addEventListener('DOMContentLoaded', () => {
+            const raw = document.getElementById('raw-markdown-content').textContent;
+            if (raw && window.marked) {
+                document.getElementById('article-markdown-body').innerHTML = marked.parse(raw);
+            }
+            loadComments();
+        });
+
+        // Load Comments Tree
+        async function loadComments() {
+            try {
+                const res = await fetch(`/api/v1/comments/article/${articleId}`);
+                if (res.ok) {
+                    const comments = await res.json();
+                    renderComments(comments);
+                }
+            } catch (e) {
+                console.error('Error loading comments:', e);
+            }
+        }
+
+        function renderComments(comments) {
+            const container = document.getElementById('comments-container');
+            if (!comments || comments.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 1.5rem 0;">No comments yet. Be the first to share your perspective!</p>';
+                return;
+            }
+
+            container.innerHTML = comments.map(c => renderCommentItem(c)).join('');
+        }
+
+        function renderCommentItem(c) {
+            const dateStr = new Date(c.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+            const initial = c.user && c.user.name ? c.user.name.charAt(0).toUpperCase() : 'U';
+            const userName = c.user ? c.user.name : 'Anonymous';
+
+            let repliesHtml = '';
+            if (c.replies && c.replies.length > 0) {
+                repliesHtml = `<div class="comment-replies">${c.replies.map(r => renderCommentItem(r)).join('')}</div>`;
+            }
+
+            return `
+                <div class="comment-item" id="comment-${c.id}">
+                    <div class="comment-header">
+                        <div class="author-chip">
+                            <div class="author-avatar" style="width: 28px; height: 28px; font-size: 0.75rem;">${initial}</div>
+                            <div>
+                                <span style="font-weight: 600; font-size: 0.88rem; color: #fff;">${userName}</span>
+                                <span style="font-size: 0.75rem; color: var(--text-muted); margin-left: 0.5rem;">${dateStr}</span>
+                            </div>
+                        </div>
+                        <button onclick="toggleReplyBox(${c.id})" class="btn btn-outline btn-sm" style="font-size: 0.78rem; padding: 0.2rem 0.6rem;">Reply</button>
+                    </div>
+                    <p style="color: #cbd5e1; font-size: 0.93rem; line-height: 1.5; white-space: pre-line;">${escapeHtml(c.content)}</p>
+
+                    <!-- Hidden Reply Box -->
+                    <div id="reply-box-${c.id}" style="display: none; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color);">
+                        <textarea id="reply-input-${c.id}" class="form-input" style="min-height: 60px;" placeholder="Write a reply..."></textarea>
+                        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.5rem;">
+                            <button onclick="toggleReplyBox(${c.id})" class="btn btn-outline btn-sm">Cancel</button>
+                            <button onclick="App.postComment(${articleId}, ${c.id})" class="btn btn-primary btn-sm">Send Reply</button>
+                        </div>
+                    </div>
+
+                    ${repliesHtml}
+                </div>
+            `;
+        }
+
+        function toggleReplyBox(id) {
+            const el = document.getElementById(`reply-box-${id}`);
+            if (el) {
+                el.style.display = el.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        /*]]>*/
+    </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+name: Blog-app
+
+on:
+  push:
+    branches: main
+
+env:
+  APP_NAME: blogapp
+  CONTAINER_NAME: springboot-container-new
+  MYSQL_CONTAINER_NAME: mysql-container-new
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@5
+        with:
+          java-version: 25
+          distribution: temurin
+          cache: maven
+
+      - name: Build Application
+        run: mvn clean package
+
+      #      - name: Set up Docker Buildx
+      #        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ vars.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker images
+        run: |
+          docker-compose -f docker-compose.yaml build
+          docker-compose -f docker-compose.yaml push
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{vars.AWS_EC2_HOST}}
+          username: ${{vars.AWS_EC2_USER}}
+          key: ${{secrets.AWS_EC2_PASSWORD}}
+          script: |
+            cd /home/ubuntu/blog-app
+            docker-compose -f docker-compose.yaml down
+            docker-compose -f docker-compose.yaml up -d

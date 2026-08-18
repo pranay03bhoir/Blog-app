@@ -64,6 +64,7 @@ jobs:
             docker pull mysql
             docker run -d \
             --name ${{env.MYSQL_CONTAINER_NAME}} \
+            --network blog-network \
             -e MYSQL_ROOT_PASSWORD=${{env.MYSQL_ROOT_PASSWORD}} \
             -e MYSQL_DATABASE=${{env.MYSQL_DATABASE}} \
             -p 3306:3306 mysql
@@ -73,6 +74,7 @@ jobs:
             docker rm ${{env.CONTAINER_NAME}} || true
             docker run -d \
             --name ${{env.CONTAINER_NAME}} \
+            --network blog-network \
             -p 8080:8080  \
             -e spring.profiles.active=prod \
             -e SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/blog_app?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true \

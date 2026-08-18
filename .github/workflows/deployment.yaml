@@ -2,7 +2,10 @@ name: Blog-app
 
 on:
   push:
-    branches: main
+    branches:
+      - main
+  workflow_dispatch:
+
 
 env:
   APP_NAME: blogapp-fullstack

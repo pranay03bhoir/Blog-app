@@ -59,9 +59,9 @@ jobs:
           username: ${{vars.AWS_EC2_USER}}
           key: ${{secrets.AWS_EC2_PASSWORD}}
           script: |
-            docker pull mysql
             docker stop ${{env.MYSQL_CONTAINER_NAME}}
-            docker rm ${{env.CONTAINER_NAME}} || true
+            docker rm ${{env.MYSQL_CONTAINER_NAME}} || true
+            docker pull mysql
             docker run -d \
             --name ${{env.MYSQL_CONTAINER_NAME}} \
             -e MYSQL_ROOT_PASSWORD=${{env.MYSQL_ROOT_PASSWORD}} \

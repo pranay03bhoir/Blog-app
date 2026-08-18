@@ -73,6 +73,7 @@ jobs:
             docker run -d \
                                    --name ${{env.CONTAINER_NAME}} \
                                     -p 8080:8080  \
+                                    -e spring.profiles.active=prod
                                     ${{vars.DOCKER_USERNAME}}/${{env.APP_NAME}}:${{env.IMAGE_TAG}}
                                   docker image prune -f
                                   echo "Deployment completed on EC2: ${{vars.AWS_EC2_HOST}}"

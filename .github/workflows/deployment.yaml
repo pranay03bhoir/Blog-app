@@ -5,9 +5,12 @@ on:
     branches: main
 
 env:
-  APP_NAME: blogapp
-  CONTAINER_NAME: springboot-container-new
-  MYSQL_CONTAINER_NAME: mysql-container-new
+  APP_NAME: blogapp-fullstack
+  CONTAINER_NAME: springboot-container
+  MYSQL_CONTAINER_NAME: mysql-container
+  MYSQL_DATABASE: blog_app
+  MYSQL_ROOT_PASSWORD: pranay123
+  IMAGE-TAG: ${{github.sha}}
 
 jobs:
   build-and-deploy:
@@ -34,11 +37,17 @@ jobs:
           username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push Docker images
+      - name: Build Docker images
         run: |
-          docker-compose -f docker-compose.yaml build
-          docker-compose -f docker-compose.yaml push
-          echo "Docker Image Build and Pushed"
+          docker build \
+          -t ${{vars.DOCKER_USERNAME}}/${{env.APP_NAME}}:${{env.IMAGE_TAG}} \
+          .
+          echo "Docker image built: ${{vars.DOCKER_USERNAME}}/${{env.APP_NAME}}:${{env.IMAGE_TAG}}"
+
+      - name: Push Docker Image
+        run: |
+          docker push ${{vars.DOCKER_USERNAME}}/${{env.APP_NAME}}:${{env.IMAGE_TAG}}
+          echo "Docker image pushed to DockerHub: ${{vars.DOCKER_USERNAME}}/${{env.APP_NAME}}:${{env.IMAGE_TAG}}"
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.2.2
@@ -47,6 +56,20 @@ jobs:
           username: ${{vars.AWS_EC2_USER}}
           key: ${{secrets.AWS_EC2_PASSWORD}}
           script: |
-            cd /home/ubuntu/blog-app
-            docker-compose -f docker-compose.yaml down
-            docker-compose -f docker-compose.yaml up -d
+            docker pull mysql
+            docker stop ${{env.MYSQL_CONTAINER_NAME}}
+            docker run -d \
+            --name ${{env.MYSQL_CONTAINER_NAME}} \
+            -e MYSQL_ROOT_PASSWORD=${{env.MYSQL_ROOT_PASSWORD}} \
+            -e MYSQL_DATABASE=${{env.MYSQL_DATABASE}} \
+            -p 3306:3306 mysql
+            docker image prune -f
+            docker pull ${{vars.DOCKER_USERNAME}}/${{env.APP_NAME}}:${{env.IMAGE_TAG}}
+            docker stop ${{env.CONTAINER_NAME}} || true
+            docker rm ${{env.CONTAINER_NAME}} || true
+            docker run -d \
+                                   --name ${{env.CONTAINER_NAME}} \
+                                    -p 8080:8080  \
+                                    ${{vars.DOCKER_USERNAME}}/${{env.APP_NAME}}:${{env.IMAGE_TAG}}
+                                  docker image prune -f
+                                  echo "Deployment completed on EC2: ${{vars.AWS_EC2_HOST}}"

@@ -13,7 +13,7 @@ env:
   MYSQL_CONTAINER_NAME: mysql-container
   MYSQL_DATABASE: blog_app
   MYSQL_ROOT_PASSWORD: pranay123
-  IMAGE-TAG: latest
+  IMAGE_TAG: ${{github.sha}}
 
 jobs:
   build-and-deploy:

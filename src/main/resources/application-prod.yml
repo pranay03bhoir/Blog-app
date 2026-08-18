@@ -12,6 +12,9 @@ spring:
     show-sql: false
     database-platform: org.hibernate.dialect.MySQLDialect
     open-in-view: true
+    properties:
+      hibernate:
+        format_sql: true
   #minIO configuration
   minio:
     endpoint: http://localhost:9000

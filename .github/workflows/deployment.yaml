@@ -75,6 +75,9 @@ jobs:
             --name ${{env.CONTAINER_NAME}} \
             -p 8080:8080  \
             -e spring.profiles.active=prod \
+            -e SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/blog_app?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true \
+            -e SPRING_DATASOURCE_USERNAME=root \
+            -e SPRING_DATASOURCE_PASSWORD=${{env.MYSQL_ROOT_PASSWORD}} \
             ${{vars.DOCKER_USERNAME}}/${{env.APP_NAME}}:${{env.IMAGE_TAG}}
             docker image prune -f
             echo "Deployment completed on EC2: ${{vars.AWS_EC2_HOST}}"

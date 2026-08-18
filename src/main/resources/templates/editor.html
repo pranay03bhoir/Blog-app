@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title th:text="${isEdit} ? 'Edit Story - BlogApp Pro' : 'New Story - BlogApp Pro'">Story Editor - BlogApp Pro</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,17 +19,17 @@
     <main class="main-content">
         <div class="container">
 
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h1 style="font-size: 1.75rem;" th:text="${isEdit} ? 'Edit Story' : 'Draft New Story'">Draft New Story</h1>
-                <div style="display: flex; gap: 0.75rem;">
+            <div class="editor-header">
+                <h1 style="font-size: clamp(1.4rem, 4vw, 1.75rem);" th:text="${isEdit} ? 'Edit Story' : 'Draft New Story'">Draft New Story</h1>
+                <div class="editor-header-actions">
                     <button type="button" onclick="saveArticle('DRAFT')" class="btn btn-secondary">Save Draft</button>
                     <button type="button" onclick="saveArticle('PUBLISHED')" class="btn btn-primary">Publish Story 🚀</button>
                 </div>
             </div>
 
-            <!-- Meta settings bar -->
-            <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; margin-bottom: 1.5rem;">
-                <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.5rem; margin-bottom: 1.25rem;">
+            <!-- Meta settings card -->
+            <div class="editor-meta-card">
+                <div class="form-grid-1-5col" style="margin-bottom: 1.25rem;">
                     <div>
                         <label class="form-label">Story Title *</label>
                         <input type="text" id="article-title" class="form-input" placeholder="Give your story a clear title..." th:value="${article.title}" required />
@@ -51,7 +51,7 @@
                     <input type="text" id="article-shortDesc" class="form-input" placeholder="A brief 1-2 sentence preview for feed cards..." th:value="${article.shortDesc}" />
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <div class="form-grid-2col">
                     <div>
                         <label class="form-label">Tags (comma separated)</label>
                         <input type="text" id="article-tags" class="form-input" placeholder="e.g. springboot, docker, microservices" 
@@ -59,8 +59,8 @@
                     </div>
                     <div>
                         <label class="form-label">Cover Image (Upload or URL)</label>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <input type="text" id="article-coverUrl" class="form-input" placeholder="https://... or uploaded image" th:value="${article.coverImageUrl}" />
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <input type="text" id="article-coverUrl" class="form-input" style="flex: 1; min-width: 140px;" placeholder="https://... or upload" th:value="${article.coverImageUrl}" />
                             <label class="btn btn-secondary btn-sm" style="white-space: nowrap; cursor: pointer;">
                                 📁 Upload
                                 <input type="file" id="cover-file-input" style="display: none;" accept="image/*" onchange="uploadCoverImage(this)" />
@@ -70,17 +70,23 @@
                 </div>
             </div>
 
+            <!-- Mobile Editor Tabs Toggle (Write vs Preview) -->
+            <div class="editor-tabs-mobile">
+                <button type="button" class="editor-tab-btn active" id="tab-write-btn" onclick="switchEditorTab('write')">✍️ Write</button>
+                <button type="button" class="editor-tab-btn" id="tab-preview-btn" onclick="switchEditorTab('preview')">👁️ Live Preview</button>
+            </div>
+
             <!-- Editor & Live Markdown Preview Layout -->
-            <div class="editor-layout">
+            <div class="editor-layout view-write" id="editor-layout">
                 <div class="editor-pane">
-                    <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
+                    <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.25rem;">
                         <span>MARKDOWN CONTENT</span>
-                        <span>Supports # Headers, **bold**, `code`, etc.</span>
+                        <span>Supports # Headers, **bold**, `code`</span>
                     </div>
                     <textarea id="article-content" class="editor-textarea" placeholder="Write your story in Markdown here..." oninput="updateLivePreview()" th:text="${article.content}"></textarea>
                 </div>
 
-                <div>
+                <div class="preview-pane-wrapper">
                     <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem;">
                         LIVE PREVIEW
                     </div>
@@ -102,12 +108,32 @@
         const articleId = /*[[${article.id}]]*/ null;
 
         function updateLivePreview() {
-            const raw = document.getElementById('article-content').value;
+            const contentEl = document.getElementById('article-content');
+            const raw = contentEl ? contentEl.value : '';
             const previewEl = document.getElementById('editor-preview');
             if (raw && window.marked) {
                 previewEl.innerHTML = marked.parse(raw);
             } else {
-                previewEl.innerHTML = '<p style="color: var(--text-muted);">Start writing on the left to see the live rendering here...</p>';
+                previewEl.innerHTML = '<p style="color: var(--text-muted);">Start writing to see the live rendering here...</p>';
+            }
+        }
+
+        function switchEditorTab(mode) {
+            const layout = document.getElementById('editor-layout');
+            const writeBtn = document.getElementById('tab-write-btn');
+            const previewBtn = document.getElementById('tab-preview-btn');
+
+            if (mode === 'preview') {
+                updateLivePreview();
+                layout.classList.remove('view-write');
+                layout.classList.add('view-preview');
+                previewBtn.classList.add('active');
+                writeBtn.classList.remove('active');
+            } else {
+                layout.classList.remove('view-preview');
+                layout.classList.add('view-write');
+                writeBtn.classList.add('active');
+                previewBtn.classList.remove('active');
             }
         }
 

@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title th:text="'#' + ${tag.name} + ' - BlogApp Pro'">Tag - BlogApp Pro</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,10 +19,10 @@
         <div class="container">
 
             <!-- Tag Header -->
-            <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2.5rem; margin-bottom: 2.5rem;">
+            <div class="taxonomy-header">
                 <span class="badge badge-tag" style="margin-bottom: 0.75rem;">Topic Tag</span>
-                <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;" th:text="'#' + ${tag.name}">#Tag</h1>
-                <p style="color: var(--text-secondary); font-size: 1.05rem;">All articles tagged with this topic.</p>
+                <h1 th:text="'#' + ${tag.name}">#Tag</h1>
+                <p>All articles tagged with this topic.</p>
                 <div style="margin-top: 1rem; color: var(--text-muted); font-size: 0.88rem;">
                     <strong style="color: #fff;" th:text="${articles.totalElements}">0</strong> stories
                 </div>

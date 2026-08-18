@@ -1,22 +1,32 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Create Articles</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Create Article - BlogApp Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}">
+    <link rel="alternate icon" th:href="@{/favicon.ico}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
 
-<div>
-    <h1>Creating Article page</h1>
-    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. A animi aspernatur autem dolor eum ipsam iure maiores
-        quae quos voluptatibus. Consequatur culpa earum ipsa pariatur rem similique, unde voluptatibus! Atque cum
-        doloribus dolorum ipsa iste neque optio, pariatur quidem quisquam veritatis. Corporis culpa illum impedit in
-        iusto libero modi quasi?</p>
-    <button>Create Article</button>
-</div>
+    <div th:replace="~{layout/navbar :: navbar}"></div>
 
+    <main class="main-content">
+        <div class="container">
+            <div style="max-width: 600px; margin: 3rem auto; text-align: center; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 2.5rem;">
+                <h1 style="font-size: clamp(1.4rem, 4vw, 1.8rem); margin-bottom: 1rem;">Ready to publish your ideas?</h1>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Use our modern Markdown-powered story editor with live preview and MinIO image uploads.</p>
+                <a href="/editor" class="btn btn-primary">Open Story Editor 🚀</a>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{layout/footer :: footer}"></div>
+
+    <script th:src="@{/js/app.js}"></script>
 </body>
 </html>

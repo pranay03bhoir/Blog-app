@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>Search Stories - BlogApp Pro</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,9 +19,9 @@
         <div class="container">
 
             <div style="margin-bottom: 2rem;">
-                <h1 style="font-size: 2rem; margin-bottom: 1rem;">Explore & Search Stories</h1>
+                <h1 style="font-size: clamp(1.5rem, 4vw, 2rem); margin-bottom: 1rem;">Explore &amp; Search Stories</h1>
                 
-                <form action="/search" method="GET" style="display: flex; gap: 0.75rem; max-width: 600px;">
+                <form action="/search" method="GET" class="search-page-form">
                     <input type="text" name="q" class="form-input" placeholder="Search keywords, technologies, authors..." th:value="${query}" />
                     <button type="submit" class="btn btn-primary">Search</button>
                 </form>

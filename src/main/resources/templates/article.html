@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title th:text="${article.title} + ' - BlogApp Pro'">Article Title - BlogApp Pro</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,7 +23,7 @@
 
             <!-- Reader Header -->
             <header class="reader-header">
-                <div style="display: flex; gap: 0.75rem; align-items: center; margin-bottom: 0.75rem;">
+                <div style="display: flex; gap: 0.75rem; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap;">
                     <a th:if="${article.category != null}" 
                        th:href="@{/category/{slug}(slug=${article.category.slug ?: article.category.id})}" 
                        class="badge badge-category" 
@@ -34,7 +34,7 @@
                 </div>
 
                 <h1 th:text="${article.title}">Article Title Goes Here</h1>
-                <p style="font-size: 1.2rem; color: var(--text-secondary); line-height: 1.5;" th:text="${article.shortDesc}">Short subtitle or description...</p>
+                <p class="reader-subtitle" th:text="${article.shortDesc}">Short subtitle or description...</p>
 
                 <!-- Author & Engagement Bar -->
                 <div class="reader-author-bar">
@@ -47,12 +47,12 @@
                     </div>
 
                     <div class="reader-actions">
-                        <button class="action-btn" th:classappend="${article.isLikedByCurrentUser} ? 'active' : ''" th:onclick="'App.toggleLike(' + ${article.id} + ', this)'" id="like-button">
+                        <button class="action-btn" th:classappend="${article.isLikedByCurrentUser} ? 'active' : ''" th:onclick="'App.toggleLike(' + ${article.id} + ', this)'" id="like-button" aria-label="Like story">
                             <span>❤️</span>
                             <span class="like-count" th:text="${article.likesCount}">0</span>
                         </button>
 
-                        <button class="action-btn" th:classappend="${article.isBookmarkedByCurrentUser} ? 'bookmarked' : ''" th:onclick="'App.toggleBookmark(' + ${article.id} + ', this)'" id="bookmark-button">
+                        <button class="action-btn" th:classappend="${article.isBookmarkedByCurrentUser} ? 'bookmarked' : ''" th:onclick="'App.toggleBookmark(' + ${article.id} + ', this)'" id="bookmark-button" aria-label="Bookmark story">
                             <span>🔖</span>
                             <span>Save</span>
                         </button>
@@ -84,7 +84,7 @@
             </div>
 
             <!-- Author Bio Box -->
-            <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.75rem; margin: 3rem 0; display: flex; gap: 1.25rem; align-items: center;" th:if="${article.user != null}">
+            <div class="author-bio-box" th:if="${article.user != null}">
                 <div class="author-avatar" style="width: 60px; height: 60px; font-size: 1.4rem; flex-shrink: 0;" th:text="${#strings.substring(article.user.name, 0, 1)}">A</div>
                 <div>
                     <h4 style="color: #fff; margin-bottom: 0.25rem;" th:text="'Written by ' + ${article.user.name}">Author</h4>
@@ -126,7 +126,8 @@
 
         // Render Markdown
         document.addEventListener('DOMContentLoaded', () => {
-            const raw = document.getElementById('raw-markdown-content').textContent;
+            const rawEl = document.getElementById('raw-markdown-content');
+            const raw = rawEl ? rawEl.textContent : '';
             if (raw && window.marked) {
                 document.getElementById('article-markdown-body').innerHTML = marked.parse(raw);
             }
@@ -183,7 +184,7 @@
                     <!-- Hidden Reply Box -->
                     <div id="reply-box-${c.id}" style="display: none; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color);">
                         <textarea id="reply-input-${c.id}" class="form-input" style="min-height: 60px;" placeholder="Write a reply..."></textarea>
-                        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.5rem;">
+                        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap;">
                             <button onclick="toggleReplyBox(${c.id})" class="btn btn-outline btn-sm">Cancel</button>
                             <button onclick="App.postComment(${articleId}, ${c.id})" class="btn btn-primary btn-sm">Send Reply</button>
                         </div>

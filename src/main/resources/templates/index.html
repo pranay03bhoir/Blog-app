@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>BlogApp Pro - Insightful Engineering & Technology Stories</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,7 +31,7 @@
             <!-- Featured / Hero Article (if trending exists) -->
             <div class="hero-card" th:if="${trending != null && !trending.isEmpty()}">
                 <div class="hero-content" th:with="hero=${trending[0]}">
-                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
                         <span class="badge badge-category" th:text="${hero.category != null ? hero.category.name : 'Engineering'}">Category</span>
                         <span style="color: var(--text-muted); font-size: 0.8rem;" th:text="${hero.readingMinutes + ' min read'}">5 min read</span>
                     </div>
@@ -40,7 +40,7 @@
                     </h1>
                     <p th:text="${hero.shortDesc}">Short description of the story...</p>
                     
-                    <div style="display: flex; gap: 1rem; align-items: center;">
+                    <div class="hero-actions">
                         <a th:href="@{/articles/{slug}(slug=${hero.slug ?: hero.id})}" class="btn btn-primary">Read Full Story</a>
                         <div class="author-chip" th:if="${hero.user != null}">
                             <div class="author-avatar" th:text="${#strings.substring(hero.user.name, 0, 1)}">A</div>
@@ -55,7 +55,7 @@
             </div>
 
             <!-- Main Content Grid with Sidebar -->
-            <div style="display: grid; grid-template-columns: 2.3fr 1fr; gap: 2.5rem;">
+            <div class="content-layout-with-sidebar">
                 
                 <!-- Articles Column -->
                 <div>
@@ -70,7 +70,7 @@
                         <a href="/editor" class="btn btn-primary">Write the first story</a>
                     </div>
 
-                    <div class="articles-grid" style="grid-template-columns: 1fr;">
+                    <div class="articles-grid articles-grid-single-col">
                         <article class="article-card" th:each="art : ${articles.content}">
                             <div class="article-card-body">
                                 <div class="article-card-meta">
@@ -105,7 +105,7 @@
                     </div>
 
                     <!-- Pagination -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem;" th:if="${articles.totalPages > 1}">
+                    <div class="pagination-bar" th:if="${articles.totalPages > 1}">
                         <a th:if="${articles.pageNumber > 0}" 
                            th:href="@{/(page=${articles.pageNumber - 1}, categoryId=${selectedCategory}, tag=${selectedTag}, keyword=${keyword})}" 
                            class="btn btn-secondary btn-sm">← Previous</a>

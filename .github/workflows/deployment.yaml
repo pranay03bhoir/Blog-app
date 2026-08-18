@@ -61,6 +61,7 @@ jobs:
           script: |
             docker pull mysql
             docker stop ${{env.MYSQL_CONTAINER_NAME}}
+            docker rm ${{env.CONTAINER_NAME}} || true
             docker run -d \
             --name ${{env.MYSQL_CONTAINER_NAME}} \
             -e MYSQL_ROOT_PASSWORD=${{env.MYSQL_ROOT_PASSWORD}} \
@@ -71,9 +72,9 @@ jobs:
             docker stop ${{env.CONTAINER_NAME}} || true
             docker rm ${{env.CONTAINER_NAME}} || true
             docker run -d \
-                                   --name ${{env.CONTAINER_NAME}} \
-                                    -p 8080:8080  \
-                                    -e spring.profiles.active=prod
-                                    ${{vars.DOCKER_USERNAME}}/${{env.APP_NAME}}:${{env.IMAGE_TAG}}
-                                  docker image prune -f
-                                  echo "Deployment completed on EC2: ${{vars.AWS_EC2_HOST}}"
+            --name ${{env.CONTAINER_NAME}} \
+            -p 8080:8080  \
+            -e spring.profiles.active=prod \
+            ${{vars.DOCKER_USERNAME}}/${{env.APP_NAME}}:${{env.IMAGE_TAG}}
+            docker image prune -f
+            echo "Deployment completed on EC2: ${{vars.AWS_EC2_HOST}}"
